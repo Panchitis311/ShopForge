@@ -1,0 +1,33 @@
+spring:
+  application:
+    name: shopforge
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/shopforge}
+    username: ${DB_USER:shopforge}
+    password: ${DB_PASSWORD:shopforge}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  mail:
+    host: ${MAIL_HOST:localhost}
+    port: ${MAIL_PORT:1025}
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:change-me-change-me-change-me-change-me-0123456789}
+    expiration-minutes: 60
+  stripe:
+    secret-key: ${STRIPE_SECRET_KEY:}

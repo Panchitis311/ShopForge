@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: ${DB_NAME:-shopforge}
+      POSTGRES_USER: ${DB_USER:-shopforge}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-shopforge}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-shopforge} -d ${DB_NAME:-shopforge}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/${DB_NAME:-shopforge}
+      DB_USER: ${DB_USER:-shopforge}
+      DB_PASSWORD: ${DB_PASSWORD:-shopforge}
+      JWT_SECRET: ${JWT_SECRET:-change-me-change-me-change-me-change-me-0123456789}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
